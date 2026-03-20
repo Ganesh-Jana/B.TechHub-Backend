@@ -53,8 +53,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000",
-                "b-tech-hub-frontend.vercel.app")); // React dev server
+        config.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                "https://b-tech-hub-frontend.vercel.app"));
+        // React dev server
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
