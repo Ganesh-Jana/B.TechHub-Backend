@@ -23,57 +23,63 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtFilter jwtFilter;
+        private final JwtFilter jwtFilter;
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        // public endpoints — no token needed
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/stats").permitAll()
-                        // only ADMIN can add/delete content
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/materials", "/api/pyq",
-                                "/api/videos", "/api/subjects")
-                        .hasRole("ADMIN")
-                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/subjects/**",
-                                "/api/materials/**", "/api/pyq/**", "/api/videos/**")
-                        .hasRole("ADMIN")
-                        .requestMatchers(org.springframework.http.HttpMethod.PATCH, "/api/subjects/**").hasRole("ADMIN")
-                        // all other endpoints require a valid JWT
-                        .anyRequest().authenticated())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+                http
+                                .csrf(csrf -> csrf.disable())
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                                .sessionManagement(session -> session
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .authorizeHttpRequests(auth -> auth
+                                                // public endpoints — no token needed
+                                                .requestMatchers("/api/auth/**").permitAll()
+                                                .requestMatchers("/api/stats").permitAll()
+                                                // only ADMIN can add/delete content
+                                                .requestMatchers(org.springframework.http.HttpMethod.POST,
+                                                                "/api/materials", "/api/pyq",
+                                                                "/api/videos", "/api/subjects")
+                                                .hasRole("ADMIN")
+                                                .requestMatchers(org.springframework.http.HttpMethod.DELETE,
+                                                                "/api/subjects/**",
+                                                                "/api/materials/**", "/api/pyq/**", "/api/videos/**")
+                                                .hasRole("ADMIN")
+                                                .requestMatchers(org.springframework.http.HttpMethod.PATCH,
+                                                                "/api/subjects/**")
+                                                .hasRole("ADMIN")
+                                                // all other endpoints require a valid JWT
+                                                .anyRequest().authenticated())
+                                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
-    }
+                return http.build();
+        }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(
-                "http://localhost:3000",
-                "https://b-tech-hub-frontend.vercel.app"));
-        // React dev server
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true);
+        @Bean
+        public CorsConfigurationSource corsConfigurationSource() {
+                CorsConfiguration config = new CorsConfiguration();
+                config.setAllowedOrigins(List.of(
+                                "http://localhost:3000",
+                                "http://localhost:3001",
+                                "https://b-tech-hub-frontend.vercel.app"));
+                // React dev server
+                config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+                config.setAllowedHeaders(List.of("*"));
+                config.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
-    }
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", config);
+                return source;
+        }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
-            throws Exception {
-        return config.getAuthenticationManager();
-    }
+        @Bean
+        public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
+                        throws Exception {
+                return config.getAuthenticationManager();
+        }
 }
