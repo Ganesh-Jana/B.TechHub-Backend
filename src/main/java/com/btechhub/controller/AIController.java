@@ -62,7 +62,7 @@ public class AIController {
           "maxOutputTokens", 1000,
           "temperature", 0.7));
 
-      String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key="
+      String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key="
           + geminiApiKey;
 
       HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);

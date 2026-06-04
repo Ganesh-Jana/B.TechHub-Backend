@@ -36,7 +36,9 @@ public class SecurityConfig {
                                                 // public endpoints — no token needed
                                                 .requestMatchers("/api/auth/**").permitAll()
                                                 .requestMatchers("/api/stats").permitAll()
-                                                .requestMatchers("/api/ai/**").permitAll()
+                                                .requestMatchers("/api/ai/**").authenticated() // AI endpoint requires
+                                                                                               // authentication but any
+                                                                                               // role can access
                                                 // only ADMIN can add/delete content
                                                 .requestMatchers(org.springframework.http.HttpMethod.POST,
                                                                 "/api/materials", "/api/pyq",
